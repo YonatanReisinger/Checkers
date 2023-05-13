@@ -2,7 +2,7 @@
 
 SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src)
 {
-
+	puts("try");
 }
 SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree)
 {
