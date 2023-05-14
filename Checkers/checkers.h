@@ -68,8 +68,9 @@ SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
 void Turn(Board board, Player player);
 void PlayGame(Board board, Player starting_player);
-void initBoard(Board* pBoard);
+void initBoard(Board board);
 void initBoardRow(unsigned char row[], unsigned short int rowInd, Player player);
 void printBoard(Board board);
 void printBoardRow(unsigned char row[]);
+void checkAlloc(void* ptr);
 #endif // !__CHECKERS_H__

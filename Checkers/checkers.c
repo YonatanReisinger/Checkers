@@ -91,3 +91,11 @@ void printBoardRow(unsigned char row[])
 		printf("%c|", row[i]);
 	putchar(ENTER);
 }
+void checkAlloc(void* ptr)
+{
+	if (ptr == NULL)
+	{
+		puts("allocation failure!");
+		exit(1);
+	}
+}
