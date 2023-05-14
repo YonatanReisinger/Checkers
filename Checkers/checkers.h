@@ -8,6 +8,16 @@
 //defines
 #define _CRT_SECURE_NO_WARNINGS
 #define BOARD_SIZE 8
+#define EMPTY ' '
+#define ENTER '\n'
+#define PLAYER_1 'T'
+#define PLAYER_2 'B'
+
+//macros
+#define PRINT_PLUS_MINUS puts("+-+-+-+-+-+-+-+-+-+")
+#define PRINT_NUMS_ROW puts("+ |1|2|3|4|5|6|7|8|")
+#define IS_EVEN(num) (((num) % 2) == 0)
+#define IS_ODD(num) (((num) % 2) == 1)
 
 //typdefs
 typedef unsigned char Board[BOARD_SIZE][BOARD_SIZE];
@@ -57,5 +67,9 @@ SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src);
 SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree);
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
 void Turn(Board board, Player player);
-
+void PlayGame(Board board, Player starting_player);
+void initBoard(Board* pBoard);
+void initBoardRow(unsigned char row[], unsigned short int rowInd, Player player);
+void printBoard(Board board);
+void printBoardRow(unsigned char row[]);
 #endif // !__CHECKERS_H__

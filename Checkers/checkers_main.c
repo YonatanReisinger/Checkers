@@ -1,4 +1,4 @@
-#include "checkers.c"
+#include "checkers.h"
 void main()
 {
 }
