@@ -21,9 +21,21 @@
     <ClCompile Include="checkers.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="msm_lists.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ssm_trees.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="checkers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="msm_lists.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ssm_trees.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

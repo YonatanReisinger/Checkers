@@ -15,6 +15,8 @@
 #define LEFT 0
 #define RIGHT 1
 #define NO_CAPTURES 0
+#define START_NUM_PIECES 12
+//defines for 3
 
 //macros
 #define PRINT_PLUS_MINUS puts("+-+-+-+-+-+-+-+-+-+")
@@ -24,6 +26,11 @@
 #define IS_EMPTY_CELL(board,row,col) ((board[row][col]) == (EMPTY))
 #define IS_CORD_VALID(cord) ((0 <= cord) && (cord < BOARD_SIZE))
 #define IS_CELL_VALID(row, col) (IS_CORD_VALID(row) && IS_CORD_VALID(col))
+
+//macros for 3
+#define IS_EMPTY_LIST(lst) ((lst->head) == NULL)
+#define INIT_POS(pos,Row, Col) pos.row = Row; pos.col = Col;
+#define IS_NO_MOVES(tNode) (((tNode->nextMoves[LEFT]) == NULL) && ((tNode->nextMoves[RIGHT]) == NULL))
 //typdefs
 typedef unsigned char Board[BOARD_SIZE][BOARD_SIZE];
 typedef unsigned char Player;
@@ -76,7 +83,14 @@ void copyBoard(Board destBoard, Board srcBoard);
 void updateBoard(Board oldBoard, Board newBoard, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl);
 SingleSourceMovesTree* makeEmptyTree();
 SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree);
+
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
+multipleSourceMovesList* makeEmptyMSMList();
+SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int* pSize);
+void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* data);
+void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell);
+multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* data, multipleSourceMovesListCell* next);
+
 void Turn(Board board, Player player);
 void PlayGame(Board board, Player starting_player);
 void initBoard(Board board);
@@ -84,4 +98,7 @@ void initBoardRow(unsigned char row[], unsigned short int rowInd, Player player)
 void printBoard(Board board);
 void printBoardRow(unsigned char row[]);
 void checkAlloc(void* ptr);
+void freeTree(SingleSourceMovesTree* tr);
+void freeTreeHelper(SingleSourceMovesTreeNode* root);
+
 #endif // !__CHECKERS_H__

@@ -1,5 +1,88 @@
 #include "checkers.h"
 
+multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player)
+{
+	multipleSourceMovesList* newMSMlist;
+	SingleSourceMovesTree** piecesThatCanMove;
+	unsigned short int numOfPiecesThatCanMove, i;
+
+	newMSMlist = makeEmptyMSMList();
+	//find all the pieces of that player that can make moves
+	piecesThatCanMove = getPiecesThatCanMove(board, player, &numOfPiecesThatCanMove);
+
+	//initalize a list with all the pieces that cam move of a certain player and their best moves
+	for (i = 0; i < numOfPiecesThatCanMove; i++)
+		insertDataToEndMSMList(newMSMlist, FindSingleSourcOptimaleMove(piecesThatCanMove[i]));
+
+	free(piecesThatCanMove);
+	return newMSMlist;
+}
+void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* data)
+{
+	multipleSourceMovesListCell* MSMCell;
+	MSMCell = createNewMSMCell(data, NULL);
+	insertCellToEndMSMList(MSMList, MSMCell);
+}
+void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell)
+{
+
+}
+multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* data, multipleSourceMovesListCell* next)
+{
+	multipleSourceMovesListCell* MSMCell;
+	MSMCell = (multipleSourceMovesListCell*)malloc(sizeof(multipleSourceMovesListCell));
+	checkAlloc(MSMCell);
+
+	//fill deatils
+	MSMCell->single_source_moves_list = data;
+	MSMCell->next = next;
+
+	return MSMCell;
+}
+SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int *pSize)
+{
+	unsigned short int i, j, logSize = 0;
+	SingleSourceMovesTree** piecesThatCanMove;
+	checkersPos pos;
+
+	piecesThatCanMove = (SingleSourceMovesTree**)malloc(START_NUM_PIECES * sizeof(SingleSourceMovesTree*));
+
+	//go through all the board
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			//if there is a piece of the player in that place
+			if (board[i][j] == player)
+			{
+				INIT_POS(pos, i, j)
+				//find its moves options
+				piecesThatCanMove[logSize] = FindSingleSourceMoves(board, &pos);
+				//if it has no where to advance, thus it should not be in the array of pieces that can move
+				if (IS_NO_MOVES(piecesThatCanMove[logSize]->source))
+					freeTree(piecesThatCanMove[logSize]);
+				//if it has a place to advance, add it to the array
+				else
+					logSize++;
+			}
+		}
+	}
+
+	piecesThatCanMove = (SingleSourceMovesTree**)realloc(piecesThatCanMove, logSize * sizeof(SingleSourceMovesTree*));
+	*pSize = logSize;
+	return piecesThatCanMove;
+}
+multipleSourceMovesList* makeEmptyMSMList()
+{
+	multipleSourceMovesList* newMSMlist;
+	newMSMlist = (multipleSourceMovesList*)malloc(sizeof(multipleSourceMovesList));
+	newMSMlist->head = newMSMlist->tail = NULL;
+	checkAlloc(newMSMlist);
+	return newMSMlist;
+}
+
+
+
 SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src)
 {
 	SingleSourceMovesTree* tree;
@@ -43,6 +126,7 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 			capturesLeft++;
 			updateBoard(board, boardLeft, src, &nextLeftPos, &nextNextLeftPos, player);
 			leftMove = FindSingleSourceMovesHelper(boardLeft, &nextNextLeftPos, player);
+			capturesLeft += leftMove->total_captures_so_far;
 		}
 		//if the position after the opponnent is occupied, then a move can't be made
 		else
@@ -68,6 +152,7 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 			capturesRight++;
 			updateBoard(board, boardRight, src, &nextRightPos, &nextNextRightPos, player);
 			rightMove = FindSingleSourceMovesHelper(board, &nextNextRightPos, player);
+			capturesRight += rightMove->total_captures_so_far;
 		}
 		//if the position after the opponnent is occupied, then a move can't be made
 		else
@@ -131,10 +216,6 @@ SingleSourceMovesTree* makeEmptyTree()
 	return newTree;
 }
 SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree)
-{
-
-}
-multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player)
 {
 
 }
@@ -224,4 +305,16 @@ void checkAlloc(void* ptr)
 		puts("allocation failure!");
 		exit(1);
 	}
+}
+void freeTree(SingleSourceMovesTree* tr)
+{
+	freeTreeHelper(tr->source);
+}
+void freeTreeHelper(SingleSourceMovesTreeNode* root)
+{
+	if (root == NULL)
+		return;
+	freeTreeHelper(root->nextMoves[LEFT]);
+	freeTreeHelper(root->nextMoves[RIGHT]);
+	free(root);
 }

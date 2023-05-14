@@ -141,9 +141,13 @@
   <ItemGroup>
     <ClCompile Include="checkers.c" />
     <ClCompile Include="checkers_main.c" />
+    <ClCompile Include="msm_lists.c" />
+    <ClCompile Include="ssm_trees.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="checkers.h" />
+    <ClInclude Include="msm_lists.h" />
+    <ClInclude Include="ssm_trees.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
