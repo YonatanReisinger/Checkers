@@ -12,13 +12,15 @@
 #define ENTER '\n'
 #define PLAYER_1 'T'
 #define PLAYER_2 'B'
+#define LEFT 0
+#define RIGHT 1
 
 //macros
 #define PRINT_PLUS_MINUS puts("+-+-+-+-+-+-+-+-+-+")
 #define PRINT_NUMS_ROW puts("+ |1|2|3|4|5|6|7|8|")
 #define IS_EVEN(num) (((num) % 2) == 0)
 #define IS_ODD(num) (((num) % 2) == 1)
-
+#define IS_EMPTY_CELL(board,row,col) ((board[row][col]) == (EMPTY))
 //typdefs
 typedef unsigned char Board[BOARD_SIZE][BOARD_SIZE];
 typedef unsigned char Player;
@@ -64,6 +66,10 @@ typedef struct _multipleSourceMovesList {
 
 //functions
 SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src);
+SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos* src);
+SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* position, unsigned short captures, SingleSourceMovesTreeNode* next1, SingleSourceMovesTreeNode* next2);
+void copyBoard(Board destBoard, Board srcBoard);
+SingleSourceMovesTree* makeEmptyTree();
 SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree);
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
 void Turn(Board board, Player player);

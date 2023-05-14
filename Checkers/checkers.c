@@ -2,7 +2,46 @@
 
 SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src)
 {
+	SingleSourceMovesTree* tree;
+	tree = makeEmptyTree();
+	//fill the tree using a helper function
+	tree->source = FindSingleSourceMovesHelper(board, src);
+	return tree;
+}
+SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos* src)
+{
+	if(IS_EMPTY_CELL(board,src->row,src->col))
+}
+SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* position, unsigned short captures, SingleSourceMovesTreeNode* next1, SingleSourceMovesTreeNode* next2)
+{
+	SingleSourceMovesTreeNode* SSMTreeNode;
+	//allocate space in memory for the new single source moves tree node
+	SSMTreeNode = (SingleSourceMovesTreeNode*)malloc(sizeof(SingleSourceMovesTreeNode));
+	//make sure that the allocation succeeded
+	checkAlloc(SSMTreeNode);
 
+	//fill deatils
+	copyBoard(SSMTreeNode->board, board);
+	SSMTreeNode->pos = position;
+	SSMTreeNode->total_captures_so_far = captures;
+	SSMTreeNode->nextMoves[LEFT] = next1;
+	SSMTreeNode->nextMoves[RIGHT] = next2;
+}
+void copyBoard(Board destBoard, Board srcBoard)
+{
+	unsigned short int i, j;
+	for (i = 0; i < BOARD_SIZE; i++)
+		for (j = 0; j < BOARD_SIZE; j++)
+			destBoard[i][j] = srcBoard[i][j];
+}
+SingleSourceMovesTree* makeEmptyTree()
+{
+	SingleSourceMovesTree* newTree;
+	//allocate space in memory for the new single source moves tree
+	newTree = (SingleSourceMovesTree*)malloc(sizeof(SingleSourceMovesTree));
+	//make sure that the allocation succeeded
+	checkAlloc(newTree);
+	return newTree;
 }
 SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree)
 {
