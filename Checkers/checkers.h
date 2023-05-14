@@ -73,6 +73,7 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 checkersPos getNextPos(Player player, checkersPos* currentPos, bool direction);
 SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* position, unsigned short captures, SingleSourceMovesTreeNode* next1, SingleSourceMovesTreeNode* next2);
 void copyBoard(Board destBoard, Board srcBoard);
+void updateBoard(Board oldBoard, Board newBoard, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl);
 SingleSourceMovesTree* makeEmptyTree();
 SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree);
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);

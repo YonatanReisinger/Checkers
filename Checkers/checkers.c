@@ -17,7 +17,8 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 	SingleSourceMovesTreeNode* leftMove, *rightMove;
 	checkersPos nextLeftPos, nextRightPos;
 	unsigned short capturesLeft = 0, capturesRight = 0;
-	
+	Board boardLeft, boardRight;
+
 	//get the position of the left diagonal
 	nextLeftPos = getNextPos(board[src->row][src->col], src, LEFT);
 	//get the position of the right diagonal
@@ -28,7 +29,10 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 		leftMove = NULL;
 	//if the left is empty, the player can move there and then has to stop
 	else if (IS_EMPTY_CELL(board, nextLeftPos.row, nextLeftPos.col))
-		leftMove = createNewSSMTreeNode(board, &nextLeftPos, NO_CAPTURES, NULL, NULL);
+	{
+		updateBoard(board, boardLeft, src, NULL, &nextLeftPos, player);
+		leftMove = createNewSSMTreeNode(boardLeft, &nextLeftPos, NO_CAPTURES, NULL, NULL);
+	}
 	//else, the opponnent is in the left postion
 	else
 	{
@@ -37,7 +41,8 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 		if (IS_CELL_VALID(nextNextLeftPos.row, nextNextLeftPos.col) && IS_EMPTY_CELL(board, nextNextLeftPos.row, nextNextLeftPos.col))
 		{
 			capturesLeft++;
-			leftMove = FindSingleSourceMovesHelper(board, &nextNextLeftPos, player);
+			updateBoard(board, boardLeft, src, &nextLeftPos, &nextNextLeftPos, player);
+			leftMove = FindSingleSourceMovesHelper(boardLeft, &nextNextLeftPos, player);
 		}
 		//if the position after the opponnent is occupied, then a move can't be made
 		else
@@ -49,7 +54,10 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 		rightMove = NULL;
 	//if the right is empty, the player can move there and then has to stop
 	else if (IS_EMPTY_CELL(board, nextRightPos.row, nextRightPos.col))
+	{
+		updateBoard(board, boardRight, src, NULL, &nextRightPos, player);
 		rightMove = createNewSSMTreeNode(board, &nextRightPos, NO_CAPTURES, NULL, NULL);
+	}
 	//else, the opponnent is in the left postion
 	else
 	{
@@ -58,6 +66,7 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 		if (IS_CELL_VALID(nextNextRightPos.row, nextNextRightPos.col) && IS_EMPTY_CELL(board, nextNextRightPos.row, nextNextRightPos.col))
 		{
 			capturesRight++;
+			updateBoard(board, boardRight, src, &nextRightPos, &nextNextRightPos, player);
 			rightMove = FindSingleSourceMovesHelper(board, &nextNextRightPos, player);
 		}
 		//if the position after the opponnent is occupied, then a move can't be made
@@ -67,6 +76,17 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 
 	//retrun a newTnode that start at the src, contains the maximum number of captures that can be made from this position and has the two options that the current player has
 	return createNewSSMTreeNode(board, src, max(capturesLeft,capturesRight), leftMove, rightMove);
+}
+void updateBoard(Board oldBoard, Board newBoard ,checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl)
+{
+	copyBoard(newBoard, oldBoard);
+	//remove the requested player from the first position
+	newBoard[deletedPos1->row][deletedPos1->col] = EMPTY;
+	//if there is a player to remove in the second position (aka there is a capture and thus two positions should be changed), then remove him
+	if (deletedPos2 != NULL)
+		newBoard[deletedPos2->row][deletedPos2->col] = EMPTY;
+	//update the new position of the player that made the move
+	newBoard[add->row][add->col] = pl;
 }
 checkersPos getNextPos(Player player, checkersPos* currentPos, bool direction)
 {

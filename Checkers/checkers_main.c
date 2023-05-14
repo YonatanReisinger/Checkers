@@ -9,6 +9,8 @@ void main()
 	board[5][2] = EMPTY;
 	board[4][3] = PLAYER_2;
 	SingleSourceMovesTree* tr = FindSingleSourceMoves(board, &pos);
-
-	//printBoard(board);
+	
+	printBoard(board);
+	fflush(stdout);
+	printBoard(tr->source->nextMoves[0]->board);
 }
