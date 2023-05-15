@@ -24,9 +24,10 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 	Board boardLeft, boardRight;
 
 	//get the position of the left diagonal
-	nextLeftPos = getNextPos(board[src->row][src->col], src, LEFT);
+	//// maybe change to Player !!!!!!!!!!!!!!!
+	nextLeftPos = getNextPos(player, src, LEFT);
 	//get the position of the right diagonal
-	nextRightPos = getNextPos(board[src->row][src->col], src, RIGHT);
+	nextRightPos = getNextPos(player, src, RIGHT);
 
 	//if the next left position is outside the board or it is the same player as the current one, thus there is no where to advance
 	if (!IS_CELL_VALID(nextLeftPos.row, nextLeftPos.col) || board[nextLeftPos.row][nextLeftPos.col] == player)
@@ -113,7 +114,14 @@ SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* positi
 
 	//fill deatils
 	copyBoard(SSMTreeNode->board, board);
-	SSMTreeNode->pos = position;
+
+	//allocate space in memory for the new position pointer
+	SSMTreeNode->pos = (checkersPos*)malloc(sizeof(checkersPos));
+	//make sure that the allocation succeeded
+	checkAlloc(SSMTreeNode->pos);
+	SSMTreeNode->pos->row = position->row;
+	SSMTreeNode->pos->col = position->col;
+
 	SSMTreeNode->total_captures_so_far = captures;
 	SSMTreeNode->nextMoves[LEFT] = next1;
 	SSMTreeNode->nextMoves[RIGHT] = next2;
