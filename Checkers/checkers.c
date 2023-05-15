@@ -24,7 +24,6 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 	Board boardLeft, boardRight;
 
 	//get the position of the left diagonal
-	//// maybe change to Player !!!!!!!!!!!!!!!
 	nextLeftPos = getNextPos(player, src, LEFT);
 	//get the position of the right diagonal
 	nextRightPos = getNextPos(player, src, RIGHT);
@@ -421,7 +420,7 @@ SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigne
 {
 	unsigned short int i, j, logSize = 0;
 	SingleSourceMovesTree** piecesThatCanMove;
-	checkersPos posTest;
+	checkersPos pos;
 
 	piecesThatCanMove = (SingleSourceMovesTree**)malloc(START_NUM_PIECES * sizeof(SingleSourceMovesTree*));
 
@@ -433,11 +432,9 @@ SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigne
 			//if there is a piece of the player in that place
 			if (board[i][j] == player)
 			{
-				//INIT_POS(pos, i, j)
-				posTest.row = i;
-				posTest.col = j;
+				INIT_POS(pos, i, j)
 				//find its moves options
-				piecesThatCanMove[logSize] = FindSingleSourceMoves(board, &posTest);
+				piecesThatCanMove[logSize] = FindSingleSourceMoves(board, &pos);
 				//if it has no where to advance, thus it should not be in the array of pieces that can move
 				if (IS_NO_MOVES(piecesThatCanMove[logSize]->source))
 					freeTree(piecesThatCanMove[logSize]);
