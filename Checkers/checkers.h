@@ -75,6 +75,8 @@ typedef struct _multipleSourceMovesList {
 }multipleSourceMovesList;
 
 //functions
+
+//Q1
 SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src);
 SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos* src, Player player);
 checkersPos getNextPos(Player player, checkersPos* currentPos, bool direction);
@@ -82,14 +84,30 @@ SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* positi
 void copyBoard(Board destBoard, Board srcBoard);
 void updateBoard(Board oldBoard, Board newBoard, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl);
 SingleSourceMovesTree* makeEmptyTree();
-SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree);
 
+
+//Q2
+SingleSourceMovesListCell* createNewCell(checkersPos* position, unsigned short cap);
+bool isEmptyList(SingleSourceMovesList* lst);
+SingleSourceMovesList* createEmptyList();
+void insertDataToEndList(SingleSourceMovesList* lst, unsigned short cap, checkersPos* pos);
+bool exist(Board board, checkersPos* position, Player player);
+void goRight(checkersPos* pos, Player player);
+void goLeft(checkersPos* pos, Player player);
+bool canEatLeft(SingleSourceMovesTreeNode* moves_root, Player player);
+bool canEatRight(SingleSourceMovesTreeNode* moves_root, Player player);
+short int howManyCaptured(SingleSourceMovesTreeNode* moves_root, Board board, int capLeft, int capRight, Player player);
+void makeListOfCells(SingleSourceMovesList* lst, SingleSourceMovesTreeNode* root, Player player);
+SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_tree);
+
+
+//Q3
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
 multipleSourceMovesList* makeEmptyMSMList();
 SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int* pSize);
-void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* data);
+void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* dataList);
 void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell);
-multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* data, multipleSourceMovesListCell* next);
+multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* dataList, multipleSourceMovesListCell* next);
 
 void Turn(Board board, Player player);
 void PlayGame(Board board, Player starting_player);

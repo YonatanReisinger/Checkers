@@ -1,88 +1,9 @@
 #include "checkers.h"
 
-multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player)
-{
-	multipleSourceMovesList* newMSMlist;
-	SingleSourceMovesTree** piecesThatCanMove;
-	unsigned short int numOfPiecesThatCanMove, i;
 
-	newMSMlist = makeEmptyMSMList();
-	//find all the pieces of that player that can make moves
-	piecesThatCanMove = getPiecesThatCanMove(board, player, &numOfPiecesThatCanMove);
-
-	//initalize a list with all the pieces that cam move of a certain player and their best moves
-	for (i = 0; i < numOfPiecesThatCanMove; i++)
-		insertDataToEndMSMList(newMSMlist, FindSingleSourcOptimaleMove(piecesThatCanMove[i]));
-
-	free(piecesThatCanMove);
-	return newMSMlist;
-}
-void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* data)
-{
-	multipleSourceMovesListCell* MSMCell;
-	MSMCell = createNewMSMCell(data, NULL);
-	insertCellToEndMSMList(MSMList, MSMCell);
-}
-void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell)
-{
-
-}
-multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* data, multipleSourceMovesListCell* next)
-{
-	multipleSourceMovesListCell* MSMCell;
-	MSMCell = (multipleSourceMovesListCell*)malloc(sizeof(multipleSourceMovesListCell));
-	checkAlloc(MSMCell);
-
-	//fill deatils
-	MSMCell->single_source_moves_list = data;
-	MSMCell->next = next;
-
-	return MSMCell;
-}
-SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int *pSize)
-{
-	unsigned short int i, j, logSize = 0;
-	SingleSourceMovesTree** piecesThatCanMove;
-	checkersPos pos;
-
-	piecesThatCanMove = (SingleSourceMovesTree**)malloc(START_NUM_PIECES * sizeof(SingleSourceMovesTree*));
-
-	//go through all the board
-	for (i = 0; i < BOARD_SIZE; i++)
-	{
-		for (j = 0; j < BOARD_SIZE; j++)
-		{
-			//if there is a piece of the player in that place
-			if (board[i][j] == player)
-			{
-				INIT_POS(pos, i, j)
-				//find its moves options
-				piecesThatCanMove[logSize] = FindSingleSourceMoves(board, &pos);
-				//if it has no where to advance, thus it should not be in the array of pieces that can move
-				if (IS_NO_MOVES(piecesThatCanMove[logSize]->source))
-					freeTree(piecesThatCanMove[logSize]);
-				//if it has a place to advance, add it to the array
-				else
-					logSize++;
-			}
-		}
-	}
-
-	piecesThatCanMove = (SingleSourceMovesTree**)realloc(piecesThatCanMove, logSize * sizeof(SingleSourceMovesTree*));
-	*pSize = logSize;
-	return piecesThatCanMove;
-}
-multipleSourceMovesList* makeEmptyMSMList()
-{
-	multipleSourceMovesList* newMSMlist;
-	newMSMlist = (multipleSourceMovesList*)malloc(sizeof(multipleSourceMovesList));
-	newMSMlist->head = newMSMlist->tail = NULL;
-	checkAlloc(newMSMlist);
-	return newMSMlist;
-}
-
-
-
+//Q1
+//
+//
 SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src)
 {
 	SingleSourceMovesTree* tree;
@@ -215,18 +136,349 @@ SingleSourceMovesTree* makeEmptyTree()
 	checkAlloc(newTree);
 	return newTree;
 }
-SingleSourceMovesList* FindSingleSourcOptimaleMove(SingleSourceMovesTree* moves_tree)
-{
 
+
+//Q2
+///
+//
+
+SingleSourceMovesListCell* createNewCell(checkersPos* position, unsigned short cap) {
+	SingleSourceMovesListCell* curr = (SingleSourceMovesListCell*)malloc(sizeof(SingleSourceMovesListCell));
+	checkAlloc(curr);
+	curr->position = position;
+	curr->captures = cap;
+	curr->next = NULL;
 }
+
+
+bool isEmptyList(SingleSourceMovesList* lst) {
+	return (lst->head == NULL);
+}
+
+
+SingleSourceMovesList* createEmptyList() {//creates empty list and returns it
+	SingleSourceMovesList* curr = (SingleSourceMovesList*)malloc(sizeof(SingleSourceMovesList));
+	checkAlloc(curr);
+	curr->head = NULL;
+	curr->tail = NULL;
+	return curr;
+}
+
+
+
+void insertDataToEndList(SingleSourceMovesList* lst, unsigned short cap, checkersPos* pos) {
+	//inserts data to end list
+	SingleSourceMovesListCell* cell = createNewCell(pos, cap);
+	checkAlloc(cell);
+	if (isEmptyList(lst)) {
+		lst->head = lst->tail = cell;
+	}
+	else {
+		lst->tail->next = cell;
+		lst->tail = cell;
+		cell->next = NULL;
+	}
+}
+
+
+bool exist(Board board, checkersPos* position, Player player) {//if a player exist in a given row/column
+	return (board[position->row][position->col] == player);
+}
+
+
+void goRight(checkersPos* pos, Player player) {//Takes the player positon right, by the player type
+	if (player == PLAYER_1) {
+		pos->col += 1;
+		pos->row += 1;
+	}
+	else {
+		pos->col += 1;
+		pos->row -= 1;
+	}
+}
+
+
+void goLeft(checkersPos* pos, Player player) {//Takes the player positon left, by the player type
+	if (player == PLAYER_1) {
+		pos->col -= 1;
+		pos->row += 1;
+	}
+	else {
+		pos->col -= 1;
+		pos->row -= 1;
+	}
+}
+
+
+bool canEatLeft(SingleSourceMovesTreeNode* moves_root, Player player) {
+	//checks if a player can eat the opponent on his left
+	checkersPos currPos;
+	currPos.col = moves_root->pos->col;
+	currPos.row = moves_root->pos->row;
+	if (player == PLAYER_1) {
+		goLeft(&currPos, player);
+		if (exist(moves_root->board, &currPos, PLAYER_2)) {
+			goLeft(&currPos, player);
+			if (IS_EMPTY_CELL(moves_root->board, currPos.row, currPos.col)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	else {
+		goLeft(&currPos, player);
+		if (exist(moves_root->board, &currPos, PLAYER_1)) {
+			goLeft(&currPos, player);
+			if (IS_EMPTY_CELL(moves_root->board, currPos.row, currPos.col)) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+
+bool canEatRight(SingleSourceMovesTreeNode* moves_root, Player player) {
+	//checks if a player can eat the opponent on his left
+	checkersPos currPos;
+	currPos.col = moves_root->pos->col;
+	currPos.row = moves_root->pos->row;
+	if (player == PLAYER_1) {
+		goRight(&currPos, player);
+		if (exist(moves_root->board, &currPos, PLAYER_2)) {
+			goRight(&currPos, player);
+			if (IS_EMPTY_CELL(moves_root->board, currPos.row, currPos.col)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	else {
+		goRight(&currPos, player);
+		if (exist(moves_root->board, &currPos, PLAYER_1)) {
+			goRight(&currPos, player);
+			if (IS_EMPTY_CELL(moves_root->board, currPos.row, currPos.col)) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+
+
+short int howManyCaptured(SingleSourceMovesTreeNode* moves_root, Board board, int capLeft, int capRight, Player player) {
+	int captureLeft, captureRight;
+	if (moves_root == NULL) {
+		return 0;
+	}
+	else {
+		if (canEatLeft(moves_root, player)) {
+			captureLeft = howManyCaptured(moves_root->nextMoves[LEFT], moves_root->board, capLeft + 1, capRight, player);
+		}
+		else {
+			captureLeft = howManyCaptured(moves_root->nextMoves[LEFT], moves_root->board, capLeft, capRight, player);
+		}
+		if (canEatRight(moves_root, player)) {
+			captureRight = howManyCaptured(moves_root->nextMoves[RIGHT], moves_root->board, capLeft, capRight + 1, player);
+		}
+		else {
+			howManyCaptured(moves_root->nextMoves[RIGHT], moves_root->board, capLeft, capRight, player);
+		}
+	}
+	return max(captureLeft, capRight);
+}
+
+
+void makeListOfCells(SingleSourceMovesList* lst, SingleSourceMovesTreeNode* root, Player player) {
+	int capLeft, capRight;
+	if (root == NULL) {
+		return;
+	}
+	else {
+		insertDataToEndList(lst, NO_CAPTURES ,root->pos);
+		if (root->nextMoves[LEFT] == NULL && root->nextMoves[RIGHT] == NULL) {
+			return;
+		}
+		else if (root->nextMoves[LEFT] == NULL) {
+			makeListOfCells(lst, root->nextMoves[RIGHT], player);
+		}
+		else if (root->nextMoves[RIGHT] == NULL) {
+			makeListOfCells(lst, root->nextMoves[LEFT], player);
+		}
+		else {
+			capLeft = root->nextMoves[LEFT]->total_captures_so_far;
+			capRight = root->nextMoves[RIGHT]->total_captures_so_far;
+			if (capLeft > capRight) {
+				makeListOfCells(lst, root->nextMoves[LEFT], player);
+			}
+			else if (capRight > capLeft) {
+				makeListOfCells(lst, root->nextMoves[RIGHT], player);
+			}
+			else {
+				if (player == PLAYER_1) {
+					makeListOfCells(lst, root->nextMoves[RIGHT], player);
+				}
+				else {
+					makeListOfCells(lst, root->nextMoves[LEFT], player);
+				}
+			}
+		}
+	}
+}
+
+
+
+SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_tree) {
+	Player currPlayer;
+	char row, col;
+	row = moves_tree->source->pos->row;
+	col = moves_tree->source->pos->col;
+	currPlayer = moves_tree->source->board[row][col];
+	//SingleSourceMovesList* optList = createEmptyList();
+
+	SingleSourceMovesList* curr = (SingleSourceMovesList*)malloc(sizeof(SingleSourceMovesList));
+	checkAlloc(curr);
+	curr->head = NULL;
+	curr->tail = NULL;
+
+
+	makeListOfCells(curr, moves_tree->source, currPlayer);
+	return curr;
+}
+
+
+
+
+
+// Q3
+//
+//
+multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player)
+{
+	multipleSourceMovesList* newMSMlist;
+	SingleSourceMovesTree** piecesThatCanMove;
+	unsigned short int numOfPiecesThatCanMove, i;
+
+	newMSMlist = makeEmptyMSMList();
+	//find all the pieces of that player that can make moves
+	
+	piecesThatCanMove = getPiecesThatCanMove(board, player, &numOfPiecesThatCanMove);
+
+	//initalize a list with all the pieces that cam move of a certain player and their best moves
+	for (i = 0; i < numOfPiecesThatCanMove; i++)
+		insertDataToEndMSMList(newMSMlist, FindSingleSourceOptimalMove(piecesThatCanMove[i]));
+
+	free(piecesThatCanMove);
+	return newMSMlist;
+}
+void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* dataList)
+{
+	multipleSourceMovesListCell* MSMCell;
+	//create new msm cell with ssm list as it's data
+	MSMCell = createNewMSMCell(dataList, NULL);
+	//insert the new cell to the msm list
+	insertCellToEndMSMList(MSMList, MSMCell);
+}
+void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell)
+{
+	//if the list is empty, thus the new node should be the head and tail
+	if (IS_EMPTY_LIST(MSMList))
+	{
+		MSMCell->next = NULL;
+		MSMList->head = MSMList->tail = MSMCell;
+	}
+	else
+	{
+		MSMCell->next = NULL;
+		//the function inserts a node to the end, thus the new node is the new tail
+		MSMList->tail->next = MSMCell;
+		MSMList->tail = MSMCell;
+	}
+}
+multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* dataList, multipleSourceMovesListCell* next)
+{
+	multipleSourceMovesListCell* MSMCell;
+	//allocate space for the new node
+	MSMCell = (multipleSourceMovesListCell*)malloc(sizeof(multipleSourceMovesListCell));
+	checkAlloc(MSMCell);
+
+	//fill deatils
+	MSMCell->single_source_moves_list = dataList;
+	MSMCell->next = next;
+
+	return MSMCell;
+}
+SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int* pSize)
+{
+	unsigned short int i, j, logSize = 0;
+	SingleSourceMovesTree** piecesThatCanMove;
+	checkersPos posTest;
+
+	piecesThatCanMove = (SingleSourceMovesTree**)malloc(START_NUM_PIECES * sizeof(SingleSourceMovesTree*));
+
+	//go through all the board
+	for (i = 0; i < BOARD_SIZE; i++)
+	{
+		for (j = 0; j < BOARD_SIZE; j++)
+		{
+			//if there is a piece of the player in that place
+			if (board[i][j] == player)
+			{
+				//INIT_POS(pos, i, j)
+				posTest.row = i;
+				posTest.col = j;
+				//find its moves options
+				piecesThatCanMove[logSize] = FindSingleSourceMoves(board, &posTest);
+				//if it has no where to advance, thus it should not be in the array of pieces that can move
+				if (IS_NO_MOVES(piecesThatCanMove[logSize]->source))
+					freeTree(piecesThatCanMove[logSize]);
+				//if it has a place to advance, add it to the array
+				else
+					logSize++;
+			}
+		}
+	}
+
+	//shrink the array to it's logical size
+	piecesThatCanMove = (SingleSourceMovesTree**)realloc(piecesThatCanMove, logSize * sizeof(SingleSourceMovesTree*));
+	//update the return size
+	*pSize = logSize;
+	return piecesThatCanMove;
+}
+multipleSourceMovesList* makeEmptyMSMList()
+{
+	multipleSourceMovesList* newMSMlist;
+	//allocate space for the new list
+	newMSMlist = (multipleSourceMovesList*)malloc(sizeof(multipleSourceMovesList));
+	newMSMlist->head = newMSMlist->tail = NULL;
+	checkAlloc(newMSMlist);
+	return newMSMlist;
+}
+
+
+
+
+
+
 void Turn(Board board, Player player)
 {
 
 }
+
+
 void PlayGame(Board board, Player starting_player)
 {
+	Player currentPlayer = starting_player;
+	bool gameEnded = false;
 
+	while (!gameEnded)
+	{
+
+	}
 }
+
+
 void initBoard(Board board)
 {
 	unsigned short int i;
