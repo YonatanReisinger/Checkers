@@ -17,10 +17,11 @@ void main()
 	board[1][0] = EMPTY;
 
 	//PlayGame(board, PLAYER_1);
-	//SingleSourceMovesTree* tr = FindSingleSourceMoves(board, &pos);
+	SingleSourceMovesTree* tr = FindSingleSourceMoves(board, &pos);
 	//SingleSourceMovesList* ssmList = FindSingleSourceOptimalMove(tr);
 	
-	multipleSourceMovesList* msmLst = FindAllPossiblePlayerMoves(board, PLAYER_2);
+	//multipleSourceMovesList* msmLst = FindAllPossiblePlayerMoves(board, PLAYER_2);
+	//printMSMList(msmLst->head);
 
 	printBoard(board);
 	//printBoard(tr->source->nextMoves[0]->board);

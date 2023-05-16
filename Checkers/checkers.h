@@ -104,8 +104,8 @@ SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* positi
 void copyBoard(Board destBoard, Board srcBoard);
 void updateBoard(Board oldBoard, Board newBoard, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl);
 SingleSourceMovesTree* makeEmptyTree();
-SingleSourceMovesTreeNode* findSideMove(Board board, Player player, checkersPos* src, checkersPos* nextPos, unsigned short* pcaptures);
-
+SingleSourceMovesTreeNode* findSideMove(bool direction, Board board, Player player, checkersPos* src, unsigned short* pcaptures);
+SingleSourceMovesTreeNode* addCaptureToTree(bool direction, Board board, Board sideBoard, Player player, checkersPos* myPos, checkersPos* oppPos, unsigned short* pcaptures);
 
 //Q2
 SingleSourceMovesListCell* createNewCell(checkersPos* position, unsigned short cap);
@@ -130,7 +130,7 @@ void addPiecesThatCanMove(SingleSourceMovesTree** piecesThatCanMove, unsigned sh
 void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* dataList);
 void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell);
 multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* dataList, multipleSourceMovesListCell* next);
-
+void printMSMList(multipleSourceMovesListCell* head);
 
 //Q5
 //

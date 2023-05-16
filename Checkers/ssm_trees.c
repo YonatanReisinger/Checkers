@@ -15,77 +15,59 @@ SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src)
 SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos* src, Player player)
 {
 	SingleSourceMovesTreeNode* leftMove, * rightMove;
-	checkersPos nextLeftPos, nextRightPos;
 	unsigned short capturesLeft = 0, capturesRight = 0;
-	Board boardLeft, boardRight;
 
-	//get the position of the left diagonal
-	nextLeftPos = getNextPos(player, src, LEFT);
-	//get the position of the right diagonal
-	nextRightPos = getNextPos(player, src, RIGHT);
-
-	//if the next left position is outside the board or it is the same player as the current one, thus there is no where to advance
-	if (!IS_CELL_VALID(nextLeftPos.row, nextLeftPos.col) || board[nextLeftPos.row][nextLeftPos.col] == player)
-		leftMove = NULL;
-	//if the left is empty, the player can move there and then has to stop
-	else if (IS_EMPTY_CELL(board, nextLeftPos.row, nextLeftPos.col))
-	{
-		updateBoard(board, boardLeft, src, NULL, &nextLeftPos, player);
-		leftMove = createNewSSMTreeNode(boardLeft, &nextLeftPos, NO_CAPTURES, NULL, NULL);
-	}
-	//else, the opponnent is in the left postion
-	else
-	{
-		checkersPos nextNextLeftPos = getNextPos(player, &nextLeftPos, LEFT);
-		//if the next position is an opponnent and the position after him is valid and empty, thus a capture can be made
-		if (IS_CELL_VALID(nextNextLeftPos.row, nextNextLeftPos.col) && IS_EMPTY_CELL(board, nextNextLeftPos.row, nextNextLeftPos.col))
-		{
-			capturesLeft++;
-			updateBoard(board, boardLeft, src, &nextLeftPos, &nextNextLeftPos, player);
-			leftMove = FindSingleSourceMovesHelper(boardLeft, &nextNextLeftPos, player);
-			capturesLeft += leftMove->total_captures_so_far;
-		}
-		//if the position after the opponnent is occupied, then a move can't be made
-		else
-			leftMove = NULL;
-	}
-
-	//if the next right position is outside the board or it is the same player as the current one, thus there is no where to advance
-	if (!IS_CELL_VALID(nextRightPos.row, nextRightPos.col) || board[nextRightPos.row][nextRightPos.col] == player)
-		rightMove = NULL;
-	//if the right is empty, the player can move there and then has to stop
-	else if (IS_EMPTY_CELL(board, nextRightPos.row, nextRightPos.col))
-	{
-		updateBoard(board, boardRight, src, NULL, &nextRightPos, player);
-		rightMove = createNewSSMTreeNode(board, &nextRightPos, NO_CAPTURES, NULL, NULL);
-	}
-	//else, the opponnent is in the left postion
-	else
-	{
-		checkersPos nextNextRightPos = getNextPos(player, &nextRightPos, RIGHT);
-		//if the next position is an opponnent and the position after him is valid and empty, thus a capture can be made
-		if (IS_CELL_VALID(nextNextRightPos.row, nextNextRightPos.col) && IS_EMPTY_CELL(board, nextNextRightPos.row, nextNextRightPos.col))
-		{
-			capturesRight++;
-			updateBoard(board, boardRight, src, &nextRightPos, &nextNextRightPos, player);
-			rightMove = FindSingleSourceMovesHelper(board, &nextNextRightPos, player);
-			capturesRight += rightMove->total_captures_so_far;
-		}
-		//if the position after the opponnent is occupied, then a move can't be made
-		else
-			rightMove = NULL;
-	}
+	leftMove = findSideMove(LEFT ,board, player, src, &capturesLeft);
+	rightMove = findSideMove(RIGHT ,board, player, src, &capturesRight);
 
 	//retrun a newTnode that start at the src, contains the maximum number of captures that can be made from this position and has the two options that the current player has
 	return createNewSSMTreeNode(board, src, max(capturesLeft, capturesRight), leftMove, rightMove);
 }
 
-SingleSourceMovesTreeNode* findSideMove(Board board, Player player, checkersPos* src, checkersPos* nextPos, unsigned short* pcaptures)
+SingleSourceMovesTreeNode* findSideMove(bool direction, Board board, Player player, checkersPos* src, unsigned short* pcaptures)
 {
 	SingleSourceMovesTreeNode* sideMove;
+	Board sideBoard;
+	checkersPos nextPos;
 
+	//get the position of the diagonal
+	nextPos = getNextPos(player, src, direction);
 
+	//if the next left position is outside the board or it is the same player as the current one, thus there is no where to advance
+	if (!IS_CELL_VALID(nextPos.row, nextPos.col) || board[nextPos.row][nextPos.col] == player)
+		sideMove = NULL;
 
+	//if the left is empty, the player can move there and then has to stop
+	else if (IS_EMPTY_CELL(board, nextPos.row, nextPos.col))
+	{
+		updateBoard(board, sideBoard, src, NULL, &nextPos, player);
+		sideMove = createNewSSMTreeNode(sideBoard, &nextPos, NO_CAPTURES, NULL, NULL);
+	}
+	//else, the opponnent is in the left postion, attempt a capture
+	else
+		sideMove = addCaptureToTree(direction, board, sideBoard, player, src, &nextPos, pcaptures);
+
+	return sideMove;
+}
+SingleSourceMovesTreeNode* addCaptureToTree(bool direction, Board board, Board sideBoard ,Player player, checkersPos* myPos, checkersPos* oppPos, unsigned short* pcaptures)
+{
+	SingleSourceMovesTreeNode* sideMove;
+	checkersPos nextNextPos = getNextPos(player, oppPos, direction);
+
+	//if the next position is an opponnent and the position after him is valid and empty, thus a capture can be made
+	if (IS_CELL_VALID(nextNextPos.row, nextNextPos.col) && IS_EMPTY_CELL(board, nextNextPos.row, nextNextPos.col))
+	{
+		(*pcaptures)++;
+		//delte my old position and the opponent position from the board, update my piece to be in the position after the capture is made
+		updateBoard(board, sideBoard, myPos, oppPos, &nextNextPos, player);
+		//build another tree for the postion adter the capture
+		sideMove = FindSingleSourceMovesHelper(sideBoard, &nextNextPos, player);
+		//update the number of captures
+		(*pcaptures) += sideMove->total_captures_so_far;
+	}
+	//if the position after the opponnent is occupied, then a capture can't be made
+	else
+		sideMove = NULL;
 
 	return sideMove;
 }
