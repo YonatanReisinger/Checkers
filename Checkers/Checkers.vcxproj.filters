@@ -27,15 +27,15 @@
     <ClCompile Include="ssm_trees.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ssm_lists.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="checkers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="msm_lists.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ssm_trees.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

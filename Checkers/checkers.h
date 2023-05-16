@@ -104,6 +104,7 @@ SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* positi
 void copyBoard(Board destBoard, Board srcBoard);
 void updateBoard(Board oldBoard, Board newBoard, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl);
 SingleSourceMovesTree* makeEmptyTree();
+SingleSourceMovesTreeNode* findSideMove(Board board, Player player, checkersPos* src, checkersPos* nextPos, unsigned short* pcaptures);
 
 
 //Q2
@@ -125,6 +126,7 @@ SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
 multipleSourceMovesList* makeEmptyMSMList();
 SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int* pSize);
+void addPiecesThatCanMove(SingleSourceMovesTree** piecesThatCanMove, unsigned short* plogSize, unsigned short pieceRow, unsigned short pieceCol, Board board);
 void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* dataList);
 void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell);
 multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* dataList, multipleSourceMovesListCell* next);
@@ -140,6 +142,10 @@ void initGame(game* game, Player starting_player, Board board);
 playerGameNode* createNewPlayer(Player player, Board board);
 void endGame(game* game);
 
+
+// etc
+//
+//
 void Turn(Board board, Player player);
 void initBoard(Board board);
 void initBoardRow(unsigned char row[], unsigned short int rowInd, Player player);

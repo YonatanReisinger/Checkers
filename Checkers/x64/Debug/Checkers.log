@@ -1,4 +1,2 @@
-﻿  checkers.c
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\checkers.c(506,5): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\checkers.c(229): warning C4716: 'createNewCell': must return a value
+﻿  checkers_main.c
   Checkers.vcxproj -> C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\x64\Debug\Checkers.exe
