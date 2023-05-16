@@ -31,6 +31,11 @@
 #define IS_EMPTY_LIST(lst) ((lst->head) == NULL)
 #define INIT_POS(pos,Row, Col) pos.row = Row; pos.col = Col;
 #define IS_NO_MOVES(tNode) (((tNode->nextMoves[LEFT]) == NULL) && ((tNode->nextMoves[RIGHT]) == NULL))
+
+
+//macros for 5
+#define IS_GAME_OVER(board, count1, count2) ((count1 == 0) || (count2 == 0) || (isPlayerInRow(board[BOARD_SIZE - 1], PLAYER_1)) || (isPlayerInRow(board[0], PLAYER_2)))
+
 //typdefs
 typedef unsigned char Board[BOARD_SIZE][BOARD_SIZE];
 typedef unsigned char Player;
@@ -74,6 +79,21 @@ typedef struct _multipleSourceMovesList {
 	multipleSourceMovesListCell* tail;
 }multipleSourceMovesList;
 
+typedef struct PlayerGameNode {
+	Player player; //player letter
+	multipleSourceMovesList* bestMoves; //list that contains all the moves of his pieces that can move
+	unsigned short int numOfPieces; //current pieces of him on the board
+	unsigned short int capturesMade; //captures made so far in the game by the player
+	unsigned short int biggestCaptureMade; //biggest jump made so far by the player in the game
+	struct PlayerGameNode* nextPl;
+}playerGameNode;
+
+typedef struct Game {
+	Board curBoard;
+	playerGameNode* startPlayer;
+	bool gameOver;
+	Player winner;
+}game;
 //functions
 
 //Q1
@@ -109,8 +129,18 @@ void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesL
 void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell);
 multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* dataList, multipleSourceMovesListCell* next);
 
-void Turn(Board board, Player player);
+
+//Q5
+//
+//
+
 void PlayGame(Board board, Player starting_player);
+bool isPlayerInRow(unsigned char row[], Player player);
+void initGame(game* game, Player starting_player, Board board);
+playerGameNode* createNewPlayer(Player player, Board board);
+void endGame(game* game);
+
+void Turn(Board board, Player player);
 void initBoard(Board board);
 void initBoardRow(unsigned char row[], unsigned short int rowInd, Player player);
 void printBoard(Board board);
