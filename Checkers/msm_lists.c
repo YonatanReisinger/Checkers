@@ -15,8 +15,15 @@ multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player)
 	for (i = 0; i < numOfPiecesThatCanMove; i++)
 		insertDataToEndMSMList(newMSMlist, FindSingleSourceOptimalMove(piecesThatCanMove[i]));
 
-	free(piecesThatCanMove);
+	freeTreeArr(piecesThatCanMove, numOfPiecesThatCanMove);
 	return newMSMlist;
+}
+void freeTreeArr(SingleSourceMovesTree** treeArr, unsigned short size)
+{
+	unsigned short int i;
+	for (i = 0; i < size; i++)
+		freeTree(treeArr[i]);
+	free(treeArr);
 }
 void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* dataList)
 {

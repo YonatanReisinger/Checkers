@@ -34,7 +34,10 @@
 
 
 //macros for 5
-#define IS_GAME_OVER(board, count1, count2) ((count1 == 0) || (count2 == 0) || (isPlayerInRow(board[BOARD_SIZE - 1], PLAYER_1)) || (isPlayerInRow(board[0], PLAYER_2)))
+#define IS_PL_IN_CELL(pos, pl) ((pos) == (pl))
+#define PASS_TURN(curPlayer) curPlayer = curPlayer->nextPl
+#define PRINT_TURN(pl, posBefore, posAfter) printf("%c's turn:\n%c%d->%c%d\n", pl, posBefore.row + 'A', posBefore.col, posAfter.row + 'A', posAfter.col)
+#define BIGGER_CAPTURE(pl1, pl2) (((pl1->biggestCaptureMade) >= (pl2->biggestCaptureMade)) ? (pl1) : (pl2))
 
 //typdefs
 typedef unsigned char Board[BOARD_SIZE][BOARD_SIZE];
@@ -81,7 +84,6 @@ typedef struct _multipleSourceMovesList {
 
 typedef struct PlayerGameNode {
 	Player player; //player letter
-	multipleSourceMovesList* bestMoves; //list that contains all the moves of his pieces that can move
 	unsigned short int numOfPieces; //current pieces of him on the board
 	unsigned short int capturesMade; //captures made so far in the game by the player
 	unsigned short int biggestCaptureMade; //biggest jump made so far by the player in the game
@@ -92,7 +94,7 @@ typedef struct Game {
 	Board curBoard;
 	playerGameNode* startPlayer;
 	bool gameOver;
-	Player winner;
+	playerGameNode* winner;
 }game;
 //functions
 
@@ -126,6 +128,7 @@ SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
 multipleSourceMovesList* makeEmptyMSMList();
 SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int* pSize);
+void freeTreeArr(SingleSourceMovesTree** treeArr, unsigned short size);
 void addPiecesThatCanMove(SingleSourceMovesTree** piecesThatCanMove, unsigned short* plogSize, unsigned short pieceRow, unsigned short pieceCol, Board board);
 void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* dataList);
 void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell);
@@ -141,7 +144,9 @@ bool isPlayerInRow(unsigned char row[], Player player);
 void initGame(game* game, Player starting_player, Board board);
 playerGameNode* createNewPlayer(Player player, Board board);
 void endGame(game* game);
-
+void updateGameDeatils(Board boardBefore, game* game, playerGameNode* curPlayer);
+void readTurn(Board boardBefore, Board boardAfter, Player curPl, checkersPos* posBefore, checkersPos* posAfter);
+void isGameOver(game* game);
 
 // etc
 //
