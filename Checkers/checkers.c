@@ -72,11 +72,6 @@ void goLeft(checkersPos* pos, Player player) {//Takes the player positon left, b
 //
 //
 
-void Turn(Board board, Player player)
-{
-
-}
-
 void initBoard(Board board)
 {
 	unsigned short int i;

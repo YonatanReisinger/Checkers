@@ -36,7 +36,7 @@
 //macros for 5
 #define IS_PL_IN_CELL(pos, pl) ((pos) == (pl))
 #define PASS_TURN(curPlayer) curPlayer = curPlayer->nextPl
-#define PRINT_TURN(pl, posBefore, posAfter) printf("%c's turn:\n%c%d->%c%d\n", pl, posBefore.row + 'A', posBefore.col, posAfter.row + 'A', posAfter.col)
+#define PRINT_TURN(pl, posBefore, posAfter) printf("\n%c's turn:\n%c%d->%c%d\n", pl, posBefore.row + 'A', posBefore.col + 1, posAfter.row + 'A', posAfter.col + 1)
 #define BIGGER_CAPTURE(pl1, pl2) (((pl1->biggestCaptureMade) >= (pl2->biggestCaptureMade)) ? (pl1) : (pl2))
 
 //typdefs

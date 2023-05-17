@@ -1,5 +1,13 @@
 #include "checkers.h"
 
+//Q4
+// 
+// 
+void Turn(Board board, Player player)
+{
+	//תזכור לשחרר את כל הרשימות עצים וכו שמשתמשים בהם בפונקציה
+}
+
 //Q5
 //
 //
@@ -13,23 +21,20 @@ void PlayGame(Board board, Player starting_player)
 	initGame(&game, starting_player, board);
 	//give the first turn to the first player
 	curPlayer = game.startPlayer;
-
 	printBoard(board);
-
 	while (!game.gameOver)
 	{
-		printf("%c's turn:\n", curPlayer->player);
 		//save the previous board to compare the boards after the turn and read the turn
 		copyBoard(boardBeforeTurn, game.curBoard);
 		//make the best turn for the current player
 		Turn(game.curBoard, curPlayer->player);
 		//update the number of pieces and captures for each player
 		updateGameDeatils(boardBeforeTurn, &game, curPlayer);
+		printBoard(game.curBoard);
 		//check if there was a winner
 		isGameOver(&game);
 		PASS_TURN(curPlayer);
 	}
-
 	endGame(&game);
 }
 void isGameOver(game* game)
