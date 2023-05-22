@@ -1,8 +1,6 @@
 #include "checkers.h"
 
 //Q4
-// 
-// 
 void Turn(Board board, Player player)
 {
 	int posMax, posCurr, capture;
@@ -135,8 +133,14 @@ int getSingleSourceListLength(SingleSourceMovesList* lst) {
 }
 
 //Q5
-//
-//
+
+/****************
+* Function name: PlayGame
+* Input: board of checkers + a letter that represents the starting player
+* Function operation: Plays a game of checkers on the provided board with the given starting player.
+* The function initializes the game, alternates turns between players, makes the best turn for the current player,
+* updates the game details, checks if there is a winner, and ends the game when it is over.
+****************/
 void PlayGame(Board board, Player starting_player)
 {
 	playerGameNode* curPlayer;
@@ -163,32 +167,41 @@ void PlayGame(Board board, Player starting_player)
 	}
 	endGame(&game);
 }
+/****************
+* Function name: isGameOver
+* Input: pointer to the deatils of the current checkers game
+* Function operation: Checks if the game is over by checking various conditions, such as if one player ran out of pieces
+* or if a player reached the opponent's side of the board. If the game is over, it updates the game's winner
+* and sets the game over flag.
+****************/
 void isGameOver(game* game)
 {
 	//if one player ran out of pieces, the other player is the winner
-	if (game->startPlayer->numOfPieces == 0)
-	{
+	if (game->startPlayer->numOfPieces == 0){
 		game->winner = game->startPlayer->nextPl;
 		game->gameOver = true;
 	}
-	else if (game->startPlayer->nextPl->numOfPieces == 0)
-	{
+	else if (game->startPlayer->nextPl->numOfPieces == 0){
 		game->winner = game->startPlayer;
 		game->gameOver = true;
 	}
 	//if T reached the end, he is the winner
-	else if (isPlayerInRow(game->curBoard[BOARD_SIZE - 1], PLAYER_1))
-	{
+	else if (isPlayerInRow(game->curBoard[BOARD_SIZE - 1], PLAYER_1)){
 		game->winner = (game->startPlayer->player == PLAYER_1) ? game->startPlayer : game->startPlayer->nextPl;
 		game->gameOver = true;
 	}
 	//if B reached the start, he is the winner
-	else if (isPlayerInRow(game->curBoard[0], PLAYER_2))
-	{
+	else if (isPlayerInRow(game->curBoard[0], PLAYER_2)){
 		game->winner = (game->startPlayer->player == PLAYER_2) ? game->startPlayer : game->startPlayer->nextPl;
 		game->gameOver = true;
 	}
 }
+/****************
+* Function name: updateGameDetails
+* Input: the board of the game before the turn was played, struct of the game , playerGameNode* curPlayer
+* Function operation: Updates the game details after a turn, including the number of moves, captures made,
+* and the biggest capture made by the current player. It also removes the captured pieces from the opponent player.
+****************/
 void updateGameDeatils(Board boardBefore,game* game, playerGameNode* curPlayer)
 {
 	checkersPos posBefore, posAfter;
@@ -209,6 +222,12 @@ void updateGameDeatils(Board boardBefore,game* game, playerGameNode* curPlayer)
 	//if captures were made, remove the pieces that were "eaten" from the opposition player
 	curPlayer->nextPl->numOfPieces -= captures;
 }
+/****************
+* Function name: readTurn
+* Input: board before the turn, board after the turn was made, player that plays now, position before the turn, position after the turn
+* Function operation: Reads the turn by comparing the board before and after the turn.
+* It determines the positions of the player's piece before and after the turn.
+****************/
 void readTurn(Board boardBefore, Board boardAfter, Player curPl, checkersPos* posBefore, checkersPos* posAfter)
 {
 	unsigned short i, j;
@@ -235,6 +254,12 @@ void readTurn(Board boardBefore, Board boardAfter, Player curPl, checkersPos* po
 		}
 	}
 }
+/****************
+* Function name: initGame
+* Input: game* game, player that starts the game, starting board
+* Function operation: Initializes a new game with two players and the given starting player.
+* It creates player nodes, establishes the game loop, and sets the start player and game over status.
+****************/
 void initGame(game* game, Player starting_player, Board board)
 {
 	playerGameNode* pl1, * pl2;
@@ -242,8 +267,8 @@ void initGame(game* game, Player starting_player, Board board)
 	copyBoard(game->curBoard, board);
 
 	//create two player nodes
-	pl1 = createNewPlayer(PLAYER_1, board);
-	pl2 = createNewPlayer(PLAYER_2, board);
+	pl1 = createNewPlayer(PLAYER_1);
+	pl2 = createNewPlayer(PLAYER_2);
 	//make a game "loop"
 	pl1->nextPl = pl2;
 	pl2->nextPl = pl1;
@@ -252,7 +277,15 @@ void initGame(game* game, Player starting_player, Board board)
 	game->gameOver = false;
 	game->winner = NULL;
 }
-playerGameNode* createNewPlayer(Player player, Board board)
+/****************
+* Function name: createNewPlayer
+* Input: letter that represents a player, 
+* Output: playerGameNode*
+* Function operation: Creates a new player node with the provided player and initializes their details,
+* such as the number of pieces, moves, captures made, and biggest capture made.
+* It returns a pointer to the created player node.
+****************/
+playerGameNode* createNewPlayer(Player player)
 {
 	playerGameNode* newPlayer;
 
@@ -268,6 +301,12 @@ playerGameNode* createNewPlayer(Player player, Board board)
 
 	return newPlayer;
 }
+/****************
+* Function name: endGame
+* Input: pointer to the game of checkers
+* Function operation: Ends the game by presenting the winner and the player with the biggest capture in a single move.
+* It also frees the memory allocated for both player nodes.
+****************/
 void endGame(game* game)
 {
 	playerGameNode* plWithBiggestCap;
@@ -281,6 +320,13 @@ void endGame(game* game)
 	free(game->winner->nextPl);
 	free(game->winner);
 }
+/****************
+* Function name: isPlayerInRow
+* Input: one row of the board + char that represents a player
+* Output: true if that player is this row
+* Function operation: Checks if the player exists in the given row of the board.
+* It returns true if the player is found in the row; otherwise, it returns
+****************/
 bool isPlayerInRow(unsigned char row[], Player player)
 {
 	unsigned short int i;

@@ -1,6 +1,5 @@
 #include "checkers.h"
 
-
 /****************
 * Function name: FindSingleSourceMoves
 * Input: board of checkers game + position on the board
@@ -20,6 +19,12 @@ SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src)
 
 	return tree;
 }
+/****************
+* Function name: FindSingleSourceMovesHelper
+* Input: board of checkers game + position on the board + the type of player at this position
+* Output: a binary tree that represents all the possible moves of a specific piece in that position
+* Function operation: the function generates a tree node that represent a position on the board of the player and the next positions he can move to
+****************/
 SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos* src, Player player)
 {
 	SingleSourceMovesTreeNode* leftMove, * rightMove;
@@ -31,7 +36,12 @@ SingleSourceMovesTreeNode* FindSingleSourceMovesHelper(Board board, checkersPos*
 	//retrun a newTnode that start at the src, contains the maximum number of captures that can be made from this position and has the two options that the current player has
 	return createNewSSMTreeNode(board, src, max(capturesLeft, capturesRight), leftMove, rightMove);
 }
-
+/****************
+* Function name: findSideMove
+* Input: Direction (left or right), checkers board, player type, current position, and a pointer to store the number of captures.
+* Output:Tree node representing the possible move in the given direction.
+* Function operation: Determines the possible move in a specific direction (left or right) for a player on the checkers board.
+****************/
 SingleSourceMovesTreeNode* findSideMove(bool direction, Board board, Player player, checkersPos* src, unsigned short* pcaptures)
 {
 	SingleSourceMovesTreeNode* sideMove;
@@ -57,6 +67,12 @@ SingleSourceMovesTreeNode* findSideMove(bool direction, Board board, Player play
 
 	return sideMove;
 }
+/****************
+* Function name: addCaptureToTree
+* Input: Direction (left or right), checkers board, temporary board for capturing, player type, current position, opponent position, and a pointer to store the number of captures.
+* Output: Tree node representing the captured position if a capture is possible, otherwise NULL.
+* Function operation: Adds a capture move to the tree if it is possible for the player in a specific direction.
+****************/
 SingleSourceMovesTreeNode* addCaptureToTree(bool direction, Board board, Board sideBoard ,Player player, checkersPos* myPos, checkersPos* oppPos, unsigned short* pcaptures)
 {
 	SingleSourceMovesTreeNode* sideMove;
@@ -79,7 +95,12 @@ SingleSourceMovesTreeNode* addCaptureToTree(bool direction, Board board, Board s
 
 	return sideMove;
 }
-
+/****************
+* Function name: createNewSSMTreeNode
+* Input: Checkers board, position, number of captures, and two child tree nodes.
+* Output: Newly created tree node.
+* Function operation: Creates a new tree node for the single source moves tree.
+****************/
 SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* position, unsigned short captures, SingleSourceMovesTreeNode* next1, SingleSourceMovesTreeNode* next2)
 {
 	SingleSourceMovesTreeNode* SSMTreeNode;
@@ -104,7 +125,11 @@ SingleSourceMovesTreeNode* createNewSSMTreeNode(Board board, checkersPos* positi
 
 	return SSMTreeNode;
 }
-
+/****************
+* Function name: makeEmptyTree
+* Output: Empty single source moves tree.
+* Function operation: Creates an empty single source moves tree.
+****************/
 SingleSourceMovesTree* makeEmptyTree()
 {
 	SingleSourceMovesTree* newTree;
@@ -114,7 +139,12 @@ SingleSourceMovesTree* makeEmptyTree()
 	checkAlloc(newTree);
 	return newTree;
 }
-
+/****************
+* Function name: getPiecesThatCanMove
+* Input: Checkers board, player type, and a pointer to store the size of the resulting array.
+* Output: Array of single source moves trees representing the pieces that can move.
+* Function operation: Retrieves all the pieces of a player on the board that have possible moves.
+****************/
 SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigned short int* pSize)
 {
 	unsigned short int i, j, logSize = 0;
@@ -136,7 +166,11 @@ SingleSourceMovesTree** getPiecesThatCanMove(Board board, Player player, unsigne
 	*pSize = logSize;
 	return piecesThatCanMove;
 }
-
+/****************
+* Function name: addPiecesThatCanMove
+* Input: Array of single source moves trees, pointer to the logical size of the array, piece row, piece column, and the checkers board.
+* Function operation: Adds a piece to the array of pieces that can move if it has possible moves.
+****************/
 void addPiecesThatCanMove(SingleSourceMovesTree** piecesThatCanMove, unsigned short* plogSize, unsigned short pieceRow, unsigned short pieceCol, Board board)
 {
 	checkersPos pos;
@@ -150,5 +184,4 @@ void addPiecesThatCanMove(SingleSourceMovesTree** piecesThatCanMove, unsigned sh
 	//if it has a place to advance, add it to the array
 	else
 		(*plogSize)++;
-
 }

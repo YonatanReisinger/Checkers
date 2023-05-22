@@ -23,7 +23,6 @@
 #define PRINT_PLUS_MINUS puts("+-+-+-+-+-+-+-+-+-+")
 #define PRINT_NUMS_ROW puts("+ |1|2|3|4|5|6|7|8|")
 #define IS_EVEN(num) (((num) % 2) == 0)
-#define IS_ODD(num) (((num) % 2) == 1)
 #define IS_EMPTY_CELL(board,row,col) ((board[row][col]) == (EMPTY))
 #define IS_CORD_VALID(cord) ((0 <= cord) && (cord < BOARD_SIZE))
 #define IS_CELL_VALID(row, col) (IS_CORD_VALID(row) && IS_CORD_VALID(col))
@@ -146,15 +145,13 @@ void freeSingleList(SingleSourceMovesList* lst);
 void PlayGame(Board board, Player starting_player);
 bool isPlayerInRow(unsigned char row[], Player player);
 void initGame(game* game, Player starting_player, Board board);
-playerGameNode* createNewPlayer(Player player, Board board);
+playerGameNode* createNewPlayer(Player player);
 void endGame(game* game);
 void updateGameDeatils(Board boardBefore, game* game, playerGameNode* curPlayer);
 void readTurn(Board boardBefore, Board boardAfter, Player curPl, checkersPos* posBefore, checkersPos* posAfter);
 void isGameOver(game* game);
 
 // etc
-//
-//
 void Turn(Board board, Player player);
 void initBoard(Board board);
 void initBoardRow(unsigned char row[], unsigned short int rowInd, Player player);
