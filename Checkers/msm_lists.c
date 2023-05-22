@@ -72,19 +72,3 @@ multipleSourceMovesList* makeEmptyMSMList()
 	checkAlloc(newMSMlist);
 	return newMSMlist;
 }
-
-/// לזכור למחוק בסוף !!!!!!!!!!!!!!!!!!!!!!!
-void printMSMList(multipleSourceMovesListCell* head)
-{
-	multipleSourceMovesListCell* cur;
-	SingleSourceMovesListCell* ssmCur;
-
-	for (cur = head; cur != NULL; cur = cur->next)
-	{
-		printf("from %d %d position:\n", cur->single_source_moves_list->head->position->row, cur->single_source_moves_list->head->position->col);
-		for (ssmCur = cur->single_source_moves_list->head; ssmCur != NULL; ssmCur = ssmCur->next)
-		{
-			printf("%d %d\n", ssmCur->position->row, ssmCur->position->col);
-		}
-	}
-}

@@ -1,5 +1,6 @@
 #ifndef __CHECKERS_H__
 #define __CHECKERS_H__
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -16,7 +17,7 @@
 #define RIGHT 1
 #define NO_CAPTURES 0
 #define START_NUM_PIECES 12
-//defines for 3
+#define CAPTURE 1
 
 //macros
 #define PRINT_PLUS_MINUS puts("+-+-+-+-+-+-+-+-+-+")
@@ -31,7 +32,6 @@
 #define IS_EMPTY_LIST(lst) ((lst->head) == NULL)
 #define INIT_POS(pos,Row, Col) pos.row = Row; pos.col = Col;
 #define IS_NO_MOVES(tNode) (((tNode->nextMoves[LEFT]) == NULL) && ((tNode->nextMoves[RIGHT]) == NULL))
-
 
 //macros for 5
 #define IS_PL_IN_CELL(pos, pl) ((pos) == (pl))
@@ -85,6 +85,7 @@ typedef struct _multipleSourceMovesList {
 typedef struct PlayerGameNode {
 	Player player; //player letter
 	unsigned short int numOfPieces; //current pieces of him on the board
+	unsigned short int moves; //number of moves the player has done
 	unsigned short int capturesMade; //captures made so far in the game by the player
 	unsigned short int biggestCaptureMade; //biggest jump made so far by the player in the game
 	struct PlayerGameNode* nextPl;
@@ -123,7 +124,6 @@ short int howManyCaptured(SingleSourceMovesTreeNode* moves_root, Board board, in
 void makeListOfCells(SingleSourceMovesList* lst, SingleSourceMovesTreeNode* root, Player player);
 SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_tree);
 
-
 //Q3
 multipleSourceMovesList* FindAllPossiblePlayerMoves(Board board, Player player);
 multipleSourceMovesList* makeEmptyMSMList();
@@ -133,12 +133,16 @@ void addPiecesThatCanMove(SingleSourceMovesTree** piecesThatCanMove, unsigned sh
 void insertDataToEndMSMList(multipleSourceMovesList* MSMList, SingleSourceMovesList* dataList);
 void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMovesListCell* MSMCell);
 multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* dataList, multipleSourceMovesListCell* next);
-void printMSMList(multipleSourceMovesListCell* head);
+
+//Q4
+int getSingleSourceListLength(SingleSourceMovesList* lst);
+int getPosValue(checkersPos* pos);
+void updateBoardByMove(Board board, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl);
+bool leftCap(checkersPos* pos1, checkersPos* pos2);
+void myFree(multipleSourceMovesList* lst);
+void freeSingleList(SingleSourceMovesList* lst);
 
 //Q5
-//
-//
-
 void PlayGame(Board board, Player starting_player);
 bool isPlayerInRow(unsigned char row[], Player player);
 void initGame(game* game, Player starting_player, Board board);

@@ -1,6 +1,6 @@
 #include "checkers.h"
 
-SingleSourceMovesListCell* createNewCell(checkersPos* position, unsigned short cap) {
+SingleSourceMovesListCell * createNewCell(checkersPos * position, unsigned short cap) {
 	SingleSourceMovesListCell* curr = (SingleSourceMovesListCell*)malloc(sizeof(SingleSourceMovesListCell));
 	checkAlloc(curr);
 	curr->position = position;
@@ -113,37 +113,33 @@ short int howManyCaptured(SingleSourceMovesTreeNode* moves_root, Board board, in
 
 void makeListOfCells(SingleSourceMovesList* lst, SingleSourceMovesTreeNode* root, Player player) {
 	int capLeft, capRight;
-	if (root == NULL) {
+	if (root == NULL)
 		return;
-	}
+	insertDataToEndList(lst, NO_CAPTURES, root->pos);
+	if (root->nextMoves[LEFT] == NULL && root->nextMoves[RIGHT] == NULL)
+		return;
+	else if (root->nextMoves[LEFT] == NULL)
+		makeListOfCells(lst, root->nextMoves[RIGHT], player);
+	else if (root->nextMoves[RIGHT] == NULL)
+		makeListOfCells(lst, root->nextMoves[LEFT], player);
 	else {
-		insertDataToEndList(lst, NO_CAPTURES, root->pos);
-		if (root->nextMoves[LEFT] == NULL && root->nextMoves[RIGHT] == NULL) {
-			return;
-		}
-		else if (root->nextMoves[LEFT] == NULL) {
-			makeListOfCells(lst, root->nextMoves[RIGHT], player);
-		}
-		else if (root->nextMoves[RIGHT] == NULL) {
+		capLeft = root->nextMoves[LEFT]->total_captures_so_far;
+		capRight = root->nextMoves[RIGHT]->total_captures_so_far;
+		if (capLeft > capRight)
 			makeListOfCells(lst, root->nextMoves[LEFT], player);
+		else if (capRight > capLeft)
+			makeListOfCells(lst, root->nextMoves[RIGHT], player);
+		else if (root->total_captures_so_far != NO_CAPTURES) {
+			if (canEatLeft(root, player))
+				makeListOfCells(lst, root->nextMoves[LEFT], player);
+			else
+				makeListOfCells(lst, root->nextMoves[RIGHT], player);
 		}
 		else {
-			capLeft = root->nextMoves[LEFT]->total_captures_so_far;
-			capRight = root->nextMoves[RIGHT]->total_captures_so_far;
-			if (capLeft > capRight) {
-				makeListOfCells(lst, root->nextMoves[LEFT], player);
-			}
-			else if (capRight > capLeft) {
+			if (player == PLAYER_1)
 				makeListOfCells(lst, root->nextMoves[RIGHT], player);
-			}
-			else {
-				if (player == PLAYER_1) {
-					makeListOfCells(lst, root->nextMoves[RIGHT], player);
-				}
-				else {
-					makeListOfCells(lst, root->nextMoves[LEFT], player);
-				}
-			}
+			else
+				makeListOfCells(lst, root->nextMoves[LEFT], player);
 		}
 	}
 }
@@ -151,6 +147,7 @@ void makeListOfCells(SingleSourceMovesList* lst, SingleSourceMovesTreeNode* root
 SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_tree) {
 	Player currPlayer;
 	char row, col;
+	int length;
 	row = moves_tree->source->pos->row;
 	col = moves_tree->source->pos->col;
 	currPlayer = moves_tree->source->board[row][col];
@@ -163,5 +160,12 @@ SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_
 
 
 	makeListOfCells(curr, moves_tree->source, currPlayer);
+	if (moves_tree->source->total_captures_so_far != NO_CAPTURES) {
+		SingleSourceMovesListCell* currCell = curr->head->next;
+		while (currCell != NULL) {
+			currCell->captures += 1;
+			currCell = currCell->next;
+		}
+	}
 	return curr;
 }

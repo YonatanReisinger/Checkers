@@ -1,5 +1,13 @@
 #include "checkers.h"
 
+
+/****************
+* Function name: FindSingleSourceMoves
+* Input: board of checkers game + position on the board
+* Output: a binary tree that represents all the possible moves of a specific piece in that position
+* Function operation:using a helper function,
+the function generates a tree that each of it's nodes represent a position on the board that the player can move to
+****************/
 SingleSourceMovesTree* FindSingleSourceMoves(Board board, checkersPos* src)
 {
 	SingleSourceMovesTree* tree;
@@ -135,7 +143,6 @@ void addPiecesThatCanMove(SingleSourceMovesTree** piecesThatCanMove, unsigned sh
 
 	INIT_POS(pos, pieceRow, pieceCol)
 	//find its moves options
-	//maybe try gir rid of building tree !!!!!!!!!!!!!!!!!!!!
 	piecesThatCanMove[(*plogSize)] = FindSingleSourceMoves(board, &pos);
 	//if it has no where to advance, thus it should not be in the array of pieces that can move
 	if (IS_NO_MOVES(piecesThatCanMove[(*plogSize)]->source))

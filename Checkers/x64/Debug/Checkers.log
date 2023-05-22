@@ -1,15 +1,2 @@
-﻿  checkers.c
-  checkers_main.c
-  game.c
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(117,21): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(118,21): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(124,22): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(125,22): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-  msm_lists.c
-  ssm_lists.c
-  ssm_trees.c
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\ssm_trees.c(114,14): warning C4101: 'pos': unreferenced local variable
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\ssm_trees.c(136,2): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-  Generating Code...
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\ssm_lists.c(9): warning C4716: 'createNewCell': must return a value
+﻿  checkers_main.c
   Checkers.vcxproj -> C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\x64\Debug\Checkers.exe
