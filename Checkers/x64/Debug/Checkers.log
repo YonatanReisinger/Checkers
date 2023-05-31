@@ -1,7 +1,2 @@
-﻿  game.c
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(26,22): warning C4013: 'getPosVal' undefined; assuming extern returning int
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(243,21): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(244,21): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(250,22): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
-C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\Checkers\game.c(251,22): warning C4244: '=': conversion from 'unsigned short' to 'char', possible loss of data
+﻿  checkers_main.c
   Checkers.vcxproj -> C:\Users\Amir\Desktop\CS Academic\תכנות מתקדם\Checkers\x64\Debug\Checkers.exe

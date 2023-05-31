@@ -118,8 +118,6 @@ bool exist(Board board, checkersPos* position, Player player);
 void goRight(checkersPos* pos, Player player);
 void goLeft(checkersPos* pos, Player player);
 bool canEatLeft(SingleSourceMovesTreeNode* moves_root, Player player);
-bool canEatRight(SingleSourceMovesTreeNode* moves_root, Player player);
-short int howManyCaptured(SingleSourceMovesTreeNode* moves_root, Board board, int capLeft, int capRight, Player player);
 void makeListOfCells(SingleSourceMovesList* lst, SingleSourceMovesTreeNode* root, Player player);
 SingleSourceMovesList* FindSingleSourceOptimalMove(SingleSourceMovesTree* moves_tree);
 
@@ -134,8 +132,8 @@ void insertCellToEndMSMList(multipleSourceMovesList* MSMList, multipleSourceMove
 multipleSourceMovesListCell* createNewMSMCell(SingleSourceMovesList* dataList, multipleSourceMovesListCell* next);
 
 //Q4
-int getSingleSourceListLength(SingleSourceMovesList* lst);
-int getPosValue(checkersPos* pos);
+int getPosVal(checkersPos* pos);
+void checkMaxList(Player player, SingleSourceMovesList** maxList, multipleSourceMovesListCell* curr);
 void updateBoardByMove(Board board, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl);
 bool leftCap(checkersPos* pos1, checkersPos* pos2);
 void myFree(multipleSourceMovesList* lst);

@@ -1,17 +1,19 @@
 #include "checkers.h"
 
 //Q4
-void Turn(Board board, Player player)
-{
-	int posMax, posCurr, capture;
-	//gets all possible moves of the players
-	multipleSourceMovesList* playerMovesList = FindAllPossiblePlayerMoves(board, player);
-	multipleSourceMovesListCell* curr = playerMovesList->head;
+/****************
+* Function name: getOptimalList
+* Input: multipleSourceMovesList* playerMovesList, Player player
+* Output: SingleSourceMovesList*
+* Function operation: Finds the optimal list of moves from the given multipleSourceMovesList based on the player's rules. Returns the SingleSourceMovesList with the highest number of captures or the one that meets the project's specified rules if multiple lists have the same number of captures.
+****************/
+SingleSourceMovesList* getOptimalList(multipleSourceMovesList* playerMovesList, Player player) {
+	int posMax, posCurr, maxCaptures, capturesInList;;
 	//indicates the first list as the longest one
+	multipleSourceMovesListCell* curr = playerMovesList->head;
 	SingleSourceMovesList* maxList = curr->single_source_moves_list;
-	//gets the length of the list to be able to compare between the lists
-	int maxCaptures = maxList->tail->captures, capturesInList;
-	//moves to the next list 
+	maxCaptures = maxList->tail->captures;
+	//moves to the next list
 	curr = curr->next;
 	while (curr != NULL) {//checks each time if we found a longer length list
 		capturesInList = curr->single_source_moves_list->tail->captures;
@@ -23,22 +25,41 @@ void Turn(Board board, Player player)
 		else if (maxCaptures == capturesInList) {
 			//if we found two lists with the same length maxes the max one by the rules indicated in the project
 			//gets each position
-			posMax = getPosVal(maxList->head->position);
-			posCurr = getPosVal(curr->single_source_moves_list->head->position);
-			//by the type of the player, updates the max list
-			if (player == PLAYER_1 && posCurr > posMax) 
-					maxList = curr->single_source_moves_list;
-			else if (player == PLAYER_2 && posCurr < posMax)
-					maxList = curr->single_source_moves_list;
+			checkMaxList(player, &maxList, curr);
 		}
 		curr = curr->next;
 	}
-	//takes the max list and divide her by cells to indicate each move
+	return maxList;
+}
+/****************
+* Function name: checkMaxList
+* Input: Player player, SingleSourceMovesList** maxList, multipleSourceMovesListCell* curr
+* Output: None
+* Function operation: Compares the positions of the head nodes of the current list and the max list and updates the max list based on the player's rules if necessary.
+****************/
+void checkMaxList(Player player, SingleSourceMovesList** maxList, multipleSourceMovesListCell* curr) {
+	int posMax, posCurr;
+	SingleSourceMovesList* test = *maxList;
+	posMax = getPosVal((*maxList)->head->position);
+	posCurr = getPosVal(curr->single_source_moves_list->head->position);
+	//by the type of the player, updates the max list
+	if (player == PLAYER_1 && posCurr > posMax)
+		*maxList = curr->single_source_moves_list;
+	else if (player == PLAYER_2 && posCurr < posMax)
+		*maxList = curr->single_source_moves_list;
+}
+/****************
+* Function name: playTurnByPlayer
+* Input: SingleSourceMovesList* maxList, Player player, Board board
+* Output: None
+* Function operation: Executes the turn for the player based on the moves in the maxList. Updates the board and performs captures if applicable.
+****************/
+void playTurnByPlayer(SingleSourceMovesList* maxList, Player player, Board board) {
+	int capture;
 	SingleSourceMovesListCell* firstMove, * secondMove;
 	firstMove = maxList->head;
 	secondMove = firstMove->next;
-	bool leftCapture;
-	bool move = false;
+	bool move = false, leftCapture;
 	checkersPos* deletePos = (checkersPos*)malloc(sizeof(checkersPos));
 	checkAlloc(deletePos);
 	while (secondMove != NULL) {//while there is more moves to do
@@ -68,19 +89,45 @@ void Turn(Board board, Player player)
 		firstMove = secondMove;
 		secondMove = secondMove->next;
 	}
+	free(deletePos);
+}
+/****************
+* Function name: Turn
+* Input: Board board, Player player
+* Output: None
+* Function operation: Performs a turn for the specified player.
+Finds the optimal list of moves, executes the turn, and frees dynamically allocated memory.
+****************/
+void Turn(Board board, Player player)
+{
+	int posMax, posCurr, capture;
+	//gets all possible moves of the players
+	multipleSourceMovesList* playerMovesList = FindAllPossiblePlayerMoves(board, player);
+	SingleSourceMovesList* maxList = getOptimalList(playerMovesList, player);
+	//takes the max list and divide her by cells to indicate each move
+	playTurnByPlayer(maxList, player, board);
 	//free all the dynamic allocated items
 	myFree(playerMovesList);
 
 }
-
-
+/****************
+* Function name: leftCap
+* Input: checkersPos* startingPos, checkersPos* endingPos
+* Output: bool
+* Function operation: Determines whether the capture from startingPos to endingPos is a left capture or not. It compares the column values of the positions and returns true if the starting position's column is greater than the ending position's column, indicating a left capture.
+****************/
 bool leftCap(checkersPos* startingPos, checkersPos* endingPos) {
 	int startCol, endCol;
 	startCol = startingPos->col;
 	endCol = endingPos->col;
 	return (startCol > endCol);
 }
-
+/****************
+* Function name: myFree
+* Input: multipleSourceMovesList* lst
+* Output: None
+* Function operation: Frees the memory allocated for the multipleSourceMovesList and its associated SingleSourceMovesLists. It iterates through the list, frees each SingleSourceMovesList using the freeSingleList function, and then frees the multipleSourceMovesList itself.
+****************/
 void myFree(multipleSourceMovesList* lst) {
 	multipleSourceMovesListCell* curr = lst->head;
 	while (curr != NULL) {
@@ -88,22 +135,33 @@ void myFree(multipleSourceMovesList* lst) {
 		curr = curr->next;
 	}
 }
-
+/****************
+* Function name: freeSingleList
+* Input: SingleSourceMovesList* lst
+* Output: None
+* Function operation: Frees the memory allocated for the SingleSourceMovesList.
+It iterates through the list, frees each node, and then frees the head node.
+****************/
 void freeSingleList(SingleSourceMovesList* lst) {
 	SingleSourceMovesListCell* curr = lst->head;
 	SingleSourceMovesListCell* saver = curr->next;
 	while (saver != NULL) {
+		free(curr->position);
 		free(curr);
 		curr = saver;
 		saver = curr->next;
 	}
 	free(curr);
 }
-
-
-
-
-
+/****************
+* Function name: updateBoardByMove
+* Input: Board board, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl
+* Output: None
+* Function operation: Updates the game board based on the move made by a player.
+It removes the player from the first position (deletedPos1) on the board by setting it to EMPTY.
+If there is a player to remove in the second position (deletedPos2) due to a capture, it also removes that player.
+Finally, it updates the new position (add) with the player that made the move (pl) on the board.
+****************/
 void updateBoardByMove(Board board, checkersPos* deletedPos1, checkersPos* deletedPos2, checkersPos* add, Player pl) {
 	//remove the requested player from the first position
 	board[deletedPos1->row][deletedPos1->col] = EMPTY;
@@ -113,27 +171,21 @@ void updateBoardByMove(Board board, checkersPos* deletedPos1, checkersPos* delet
 	//update the new position of the player that made the move
 	board[add->row][add->col] = pl;
 }
-
-
+/****************
+* Function name: getPosVal
+* Input: checkersPos* pos
+* Output: int
+* Function operation: Calculates the position value of a checkersPos object.
+It assigns a unique value to each position on the board based on the row and column values of the position.
+The value is calculated by adding the column value to ten times the row value. The calculated value is then returned as an integer.
+****************/
 int getPosVal(checkersPos* pos) {
 	int sum = 0;
 	sum += pos->col;
 	sum += (pos->row) * 10;
 	return sum;
 }
-int getSingleSourceListLength(SingleSourceMovesList* lst) {
-	int counter = 0;
-	SingleSourceMovesListCell* curr;
-	curr = lst->head;
-	while (curr != NULL) {
-		counter++;
-		curr = curr->next;
-	}
-	return counter;
-}
-
 //Q5
-
 /****************
 * Function name: PlayGame
 * Input: board of checkers + a letter that represents the starting player
@@ -177,21 +229,21 @@ void PlayGame(Board board, Player starting_player)
 void isGameOver(game* game)
 {
 	//if one player ran out of pieces, the other player is the winner
-	if (game->startPlayer->numOfPieces == 0){
+	if (game->startPlayer->numOfPieces == 0) {
 		game->winner = game->startPlayer->nextPl;
 		game->gameOver = true;
 	}
-	else if (game->startPlayer->nextPl->numOfPieces == 0){
+	else if (game->startPlayer->nextPl->numOfPieces == 0) {
 		game->winner = game->startPlayer;
 		game->gameOver = true;
 	}
 	//if T reached the end, he is the winner
-	else if (isPlayerInRow(game->curBoard[BOARD_SIZE - 1], PLAYER_1)){
+	else if (isPlayerInRow(game->curBoard[BOARD_SIZE - 1], PLAYER_1)) {
 		game->winner = (game->startPlayer->player == PLAYER_1) ? game->startPlayer : game->startPlayer->nextPl;
 		game->gameOver = true;
 	}
 	//if B reached the start, he is the winner
-	else if (isPlayerInRow(game->curBoard[0], PLAYER_2)){
+	else if (isPlayerInRow(game->curBoard[0], PLAYER_2)) {
 		game->winner = (game->startPlayer->player == PLAYER_2) ? game->startPlayer : game->startPlayer->nextPl;
 		game->gameOver = true;
 	}
@@ -202,7 +254,7 @@ void isGameOver(game* game)
 * Function operation: Updates the game details after a turn, including the number of moves, captures made,
 * and the biggest capture made by the current player. It also removes the captured pieces from the opponent player.
 ****************/
-void updateGameDeatils(Board boardBefore,game* game, playerGameNode* curPlayer)
+void updateGameDeatils(Board boardBefore, game* game, playerGameNode* curPlayer)
 {
 	checkersPos posBefore, posAfter;
 	unsigned short captures = 0, jump;
@@ -214,7 +266,7 @@ void updateGameDeatils(Board boardBefore,game* game, playerGameNode* curPlayer)
 	//if the player moved just one row or didn't move at all, there were no captures. else, if he jumped x rows then there were x/2 captures
 	jump = abs(posBefore.row - posAfter.row);
 	captures = jump / 2;
-	curPlayer->moves += jump - captures;
+	(curPlayer->moves)++;
 	//update the number of captures
 	curPlayer->capturesMade += captures;
 	//check if the current capture was the biggest one so far
@@ -272,14 +324,14 @@ void initGame(game* game, Player starting_player, Board board)
 	//make a game "loop"
 	pl1->nextPl = pl2;
 	pl2->nextPl = pl1;
-	
+
 	game->startPlayer = (starting_player == PLAYER_1) ? pl1 : pl2;
 	game->gameOver = false;
 	game->winner = NULL;
 }
 /****************
 * Function name: createNewPlayer
-* Input: letter that represents a player, 
+* Input: letter that represents a player,
 * Output: playerGameNode*
 * Function operation: Creates a new player node with the provided player and initializes their details,
 * such as the number of pieces, moves, captures made, and biggest capture made.
